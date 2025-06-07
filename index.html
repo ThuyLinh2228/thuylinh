@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Matrix Effect</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+    }
+
+    canvas {
+      display: block;
+    }
+  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Love Fireworks</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      
+      cursor: pointer;
+      position: relative;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+    }
+
+    .love-text {
+      position: absolute;
+      color: pink;
+      font-size: 24px;
+      font-weight: bold;
+      pointer-events: none;
+      animation: rise 1s ease-out forwards;
+      text-shadow: 0 0 10px white, 0 0 20px red;
+    }
+
+    @keyframes rise {
+      0% {opacity: 1; transform: translateY(0);}
+      100% {opacity: 0; transform: translateY(-80px);}
+    }
+
+    .particle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: gold;
+      pointer-events: none;
+      animation: explode 800ms ease-out forwards;
+    }
+
+    @keyframes explode {
+      to {
+        transform: translate(var(--dx), var(--dy));
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrixCanvas"></canvas>
+
+  <script>
+    const canvas = document.getElementById('matrixCanvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Những cụm từ m muốn rơi xuống – thêm bao nhiêu cũng được
+    const words = ["My love", "Thương nàng", "Love you", "Bé đẹt", "Yêu chị bé","💖", "💕", "💗"];
+
+    const fontSize = 24;
+    const columns = canvas.width / fontSize;
+
+    const drops = Array.from({ length: columns }).map(() => ({
+      word: words[Math.floor(Math.random() * words.length)],
+      y: Math.random() * canvas.height / fontSize,
+    }));
+
+    function draw() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = '#0F0';
+      ctx.font = fontSize + 'px monospace';
+
+      drops.forEach((drop, i) => {
+        const x = i * fontSize;
+        ctx.fillText(drop.word, x, drop.y * fontSize);
+
+        if (drop.y * fontSize > canvas.height && Math.random() > 0.98) {
+          // Reset lại vị trí rơi và chọn từ mới
+          drop.y = 0;
+          drop.word = words[Math.floor(Math.random() * words.length)];
+        }
+
+        drop.y++;
+      });
+    }
+
+    setInterval(draw, 70);
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
+  <script>
+    document.addEventListener('click', function(e) {
+      const x = e.clientX;
+      const y = e.clientY;
+
+      // 💖 Text bay lên
+      const text = document.createElement('div');
+text.className = 'love-text';
+      text.innerText = 'Kim Thoa';
+      text.style.left = x + 'px';
+      text.style.top = y + 'px';
+      document.body.appendChild(text);
+      setTimeout(() => text.remove(), 1000);
+
+      // 🎆 Pháo bông nhỏ
+      for (let i = 0; i < 20; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = x + 'px';
+        p.style.top = y + 'px';
+
+        const angle = Math.random() * 2 * Math.PI;
+        const radius = 60 + Math.random() * 40;
+        const dx = Math.cos(angle) * radius + 'px';
+        const dy = Math.sin(angle) * radius + 'px';
+
+        p.style.setProperty('--dx', dx);
+        p.style.setProperty('--dy', dy);
+
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 800);
+      }
+    });
+  </script>
+</body>
+</html>
